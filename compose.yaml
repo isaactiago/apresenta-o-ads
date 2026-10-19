@@ -1,0 +1,36 @@
+services:
+  database:
+    image: mysql:5.7
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-rootpassword}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-organiza_tarefas}
+      MYSQL_USER: ${MYSQL_USER:-usuario}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD:-senha}
+    ports:
+      - '3306:3306'
+    healthcheck:
+      test: ['CMD', 'mysqladmin', 'ping', '-h', 'localhost']
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    volumes:
+      - database_data:/var/lib/mysql:rw
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '8080:8080'
+    environment:
+      DATABASE_URL: "mysql://${MYSQL_USER:-usuario}:${MYSQL_PASSWORD:-senha}@database:3306/${MYSQL_DATABASE:-organiza_tarefas}?serverVersion=5.7&charset=utf8mb4"
+      APP_ENV: ${APP_ENV:-dev}
+      APP_SECRET: ${APP_SECRET:-5ecretSymfonyKey32charsMinimumOK}
+    depends_on:
+      database:
+        condition: service_healthy
+    volumes:
+      - .:/var/www/html
+
+volumes:
+  database_data:

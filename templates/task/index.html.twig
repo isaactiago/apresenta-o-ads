@@ -1,0 +1,93 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Minhas tarefas · OrganizaTarefas{% endblock %}
+
+{% block body %}
+    <header class="site-header">
+        <div class="container">
+            <a class="brand" href="{{ path('task_list') }}">Organiza<span>Tarefas</span></a>
+        </div>
+    </header>
+
+    <main class="container">
+        <h1>Minhas tarefas</h1>
+
+        {% for type, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ type }}" role="{{ type == 'error' ? 'alert' : 'status' }}">{{ message }}</div>
+            {% endfor %}
+        {% endfor %}
+
+        <section class="card new-task" aria-labelledby="new-task-title">
+            <h2 id="new-task-title">Nova tarefa</h2>
+            {{ form_start(form, {attr: {class: 'task-form', novalidate: 'novalidate'}}) }}
+                {{ form_row(form.title) }}
+                {{ form_row(form.description) }}
+                <button type="submit" class="btn btn-primary">Adicionar tarefa</button>
+            {{ form_end(form) }}
+        </section>
+
+        <section aria-labelledby="task-list-title">
+            <h2 id="task-list-title" class="list-title">
+                Tarefas <span class="counter">{{ tasks|length }}</span>
+            </h2>
+
+            {% if tasks is empty %}
+                <div class="empty-state">
+                    <p class="empty-icon" aria-hidden="true">📝</p>
+                    <p><strong>Nenhuma tarefa por aqui ainda.</strong></p>
+                    <p>Cadastre sua primeira tarefa usando o formulário acima.</p>
+                </div>
+            {% else %}
+                <ul class="task-list">
+                    {% for task in tasks %}
+                        <li class="card task {{ task.completed ? 'is-completed' : 'is-pending' }}">
+                            <article>
+                                <header class="task-header">
+                                    <h3 class="task-title">{{ task.title }}</h3>
+                                    <span class="badge {{ task.completed ? 'badge-done' : 'badge-pending' }}">
+                                        {{ task.completed ? 'Concluída' : 'Pendente' }}
+                                    </span>
+                                </header>
+
+                                {% if task.description %}
+                                    <p class="task-description">{{ task.description|nl2br }}</p>
+                                {% endif %}
+
+                                <footer class="task-footer">
+                                    <time datetime="{{ task.createdAt|date('c') }}">
+                                        Criada em {{ task.createdAt|date('d/m/Y \\à\\s H:i') }}
+                                    </time>
+
+                                    <div class="task-actions">
+                                        {% if task.completed %}
+                                            <form method="post" action="{{ path('task_reopen', {id: task.id}) }}">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('task_reopen_' ~ task.id) }}">
+                                                <button type="submit" class="btn btn-secondary">Reabrir</button>
+                                            </form>
+                                        {% else %}
+                                            <form method="post" action="{{ path('task_complete', {id: task.id}) }}">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('task_complete_' ~ task.id) }}">
+                                                <button type="submit" class="btn btn-success">Concluir</button>
+                                            </form>
+                                        {% endif %}
+
+                                        <form method="post" action="{{ path('task_delete', {id: task.id}) }}"
+                                              data-turbo-confirm="Tem certeza que deseja excluir a tarefa &quot;{{ task.title }}&quot;?">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('task_delete_' ~ task.id) }}">
+                                            <button type="submit" class="btn btn-danger">Excluir</button>
+                                        </form>
+                                    </div>
+                                </footer>
+                            </article>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">OrganizaTarefas · PHP + Symfony + MySQL</div>
+    </footer>
+{% endblock %}
