@@ -15,7 +15,7 @@ class ListTasksController extends AbstractController
     public function __invoke(TaskRepository $taskRepository): Response
     {
         $form = $this->createForm(TaskType::class, new TaskInput(), [
-            'action' => $this->generateUrl('task_create'),
+            'action' => $this->generateUrl(CreateTaskController::ROUTE_NAME),
         ]);
 
         return $this->render('task/index.html.twig', [

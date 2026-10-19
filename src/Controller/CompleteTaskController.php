@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Task;
-use App\Service\TaskManager;
+use App\Service\CompleteTaskService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\ExpressionLanguage\Expression;
 use Symfony\Component\HttpFoundation\Response;
@@ -14,10 +14,10 @@ use Symfony\Component\Security\Http\Attribute\IsCsrfTokenValid;
 class CompleteTaskController extends AbstractController
 {
     #[IsCsrfTokenValid(new Expression('"task_complete_" ~ args["task"].getId()'))]
-    public function __invoke(Task $task, TaskManager $taskManager): Response
+    public function __invoke(Task $task, CompleteTaskService $completeTaskService): Response
     {
-        $taskManager->complete($task);
-        $this->addFlash('success', 'Tarefa concluída!');
+        $completeTaskService->execute($task);
+        $this->addFlash('success', 'Tarefa concluida!');
 
         return $this->redirectToRoute('task_list', status: Response::HTTP_SEE_OTHER);
     }
