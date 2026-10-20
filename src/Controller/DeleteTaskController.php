@@ -16,6 +16,9 @@ class DeleteTaskController extends AbstractController
         $deleteTaskService->execute($task);
         $this->addFlash('success', 'Tarefa excluida.');
 
-        return $this->redirectToRoute('task_list', status: Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute(
+            route: ListTasksController::ROUTE_NAME,
+            status: Response::HTTP_SEE_OTHER
+        );
     }
 }

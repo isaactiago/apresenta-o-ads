@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Dto\TaskInput;
+use App\DTO\TaskInputDTO;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -10,7 +10,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
- * @extends AbstractType<TaskInput>
+ * @extends AbstractType<TaskInputDTO>
  */
 class TaskType extends AbstractType
 {
@@ -31,7 +31,7 @@ class TaskType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => TaskInput::class,
+            'data_class' => TaskInputDTO::class,
             'csrf_token_id' => 'task_form',
         ]);
     }

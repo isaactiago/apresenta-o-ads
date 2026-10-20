@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Dto\TaskInput;
+use App\DTO\TaskInputDTO;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
 use App\Service\CreateTaskService;
@@ -21,24 +21,30 @@ class CreateTaskController extends AbstractController
         CreateTaskService $createTaskService,
         TaskRepository $taskRepository,
     ): Response {
-        $input = new TaskInput();
-        $form = $this->createForm(TaskType::class, $input, [
-            'action' => $this->generateUrl(self::ROUTE_NAME),
-        ]);
-        $form->handleRequest($request);
+        $input = new TaskInputDTO();
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $createTaskService->execute($input);
-            $this->addFlash('success', 'Tarefa cadastrada com sucesso!');
+        try {
+            $form = $this->createForm(TaskType::class, $input, [
+                'action' => $this->generateUrl(self::ROUTE_NAME),
+            ]);
+    
+            $form->handleRequest($request);
+    
+            if ($form->isSubmitted() && $form->isValid()) {
+                $createTaskService->execute($input);
+                $this->addFlash('success', 'Tarefa cadastrada com sucesso!');
+    
+                return $this->redirectToRoute(ListTasksController::ROUTE_NAME, status: Response::HTTP_SEE_OTHER);
+            }
+        } catch (\Throwable) {
+            $this->addFlash(type: 'error', message: 'Nao foi possivel cadastrar a tarefa. Verifique os campos.');
 
-            return $this->redirectToRoute('task_list', status: Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute(ListTasksController::ROUTE_NAME);
         }
-
-        $this->addFlash('error', 'Nao foi possivel cadastrar a tarefa. Verifique os campos.');
 
         return $this->render('task/index.html.twig', [
             'tasks' => $taskRepository->findAllNewestFirst(),
-            'form' => $form,
+            'form' => $form ?? null,
         ]);
     }
 }

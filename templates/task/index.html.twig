@@ -20,11 +20,16 @@
 
         <section class="card new-task" aria-labelledby="new-task-title">
             <h2 id="new-task-title">Nova tarefa</h2>
-            {{ form_start(form, {attr: {class: 'task-form', novalidate: 'novalidate'}}) }}
-                {{ form_row(form.title) }}
-                {{ form_row(form.description) }}
-                <button type="submit" class="btn btn-primary">Adicionar tarefa</button>
-            {{ form_end(form) }}
+            {% if form is not null %}
+                {{ form_start(form, {attr: {class: 'task-form', novalidate: 'novalidate'}}) }}
+                    {{ form_row(form.title) }}
+                    {{ form_row(form.description) }}
+                    <button type="submit" class="btn btn-primary">Adicionar tarefa</button>
+                {{ form_end(form) }}
+            {% else %}
+                <div>Carlos me passa logo</div>
+            {% endif %}
+            
         </section>
 
         <section aria-labelledby="task-list-title">

@@ -16,6 +16,6 @@ class ReopenTaskController extends AbstractController
         $reopenTaskService->execute($task);
         $this->addFlash('success', 'Tarefa reaberta.');
 
-        return $this->redirectToRoute('task_list', status: Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute(route: ListTasksController::ROUTE_NAME, status: Response::HTTP_SEE_OTHER);
     }
 }

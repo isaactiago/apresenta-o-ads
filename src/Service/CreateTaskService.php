@@ -2,7 +2,7 @@
 
 namespace App\Service;
 
-use App\Dto\TaskInput;
+use App\DTO\TaskInputDTO;
 use App\Entity\Task;
 use App\Repository\TaskRepository;
 
@@ -13,7 +13,7 @@ class CreateTaskService
     ) {
     }
 
-    public function execute(TaskInput $input): Task
+    public function execute(TaskInputDTO $input): Task
     {
         $description = trim($input->description ?? '');
 

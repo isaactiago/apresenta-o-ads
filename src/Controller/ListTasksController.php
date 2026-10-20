@@ -2,25 +2,30 @@
 
 namespace App\Controller;
 
-use App\Dto\TaskInput;
 use App\Form\TaskType;
 use App\Repository\TaskRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/', name: 'task_list', methods: ['GET'])]
+#[Route('/', name: self::ROUTE_NAME, methods: ['GET'])]
 class ListTasksController extends AbstractController
 {
+    public const string ROUTE_NAME = 'task_list';
+
     public function __invoke(TaskRepository $taskRepository): Response
     {
-        $form = $this->createForm(TaskType::class, new TaskInput(), [
-            'action' => $this->generateUrl(CreateTaskController::ROUTE_NAME),
-        ]);
+        try {
+            $form = $this->createForm(type: TaskType::class, options: [
+                'action' => $this->generateUrl(CreateTaskController::ROUTE_NAME),
+            ]);
+        } catch (\Throwable $th) {
+             $this->addFlash(type: 'error', message: 'Erro ao listar, favor entrar em contato com carlos');
+        }
 
-        return $this->render('task/index.html.twig', [
+        return $this->render(view: 'task/index.html.twig', parameters: [
             'tasks' => $taskRepository->findAllNewestFirst(),
-            'form' => $form,
+            'form' => $form ?? null,
         ]);
     }
 }
