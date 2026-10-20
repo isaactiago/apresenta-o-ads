@@ -38,6 +38,14 @@ class TaskRepository extends ServiceEntityRepository
         }
     }
 
+    public function removeAll(): int
+    {
+        return (int) $this->createQueryBuilder('t')
+            ->delete()
+            ->getQuery()
+            ->execute();
+    }
+
     public function findByIdOrFail(int $id): Task
     {
         $task = $this->find($id)
