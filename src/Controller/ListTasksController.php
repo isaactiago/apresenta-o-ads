@@ -19,7 +19,7 @@ class ListTasksController extends AbstractController
             $form = $this->createForm(type: TaskType::class, options: [
                 'action' => $this->generateUrl(CreateTaskController::ROUTE_NAME),
             ]);
-        } catch (\Throwable $th) {
+        } catch (\Throwable) {
              $this->addFlash(type: 'error', message: 'Erro ao listar, favor entrar em contato com carlos');
         }
 

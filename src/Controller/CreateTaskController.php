@@ -10,6 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Webmozart\Assert\Assert;
 
 #[Route('/tarefas', name: self::ROUTE_NAME, methods: ['POST'])]
 class CreateTaskController extends AbstractController
@@ -21,17 +22,14 @@ class CreateTaskController extends AbstractController
         CreateTaskService $createTaskService,
         TaskRepository $taskRepository,
     ): Response {
-        $input = new TaskInputDTO();
-
         try {
-            $form = $this->createForm(TaskType::class, $input, [
-                'action' => $this->generateUrl(self::ROUTE_NAME),
-            ]);
-    
-            $form->handleRequest($request);
-    
+            $form = $this->createForm(TaskType::class)->handleRequest($request);
+
             if ($form->isSubmitted() && $form->isValid()) {
-                $createTaskService->execute($input);
+                $dto = $form->getData();
+                Assert::isInstanceOf($dto, TaskInputDTO::class);
+
+                $createTaskService->execute($dto);
                 $this->addFlash('success', 'Tarefa cadastrada com sucesso!');
     
                 return $this->redirectToRoute(ListTasksController::ROUTE_NAME, status: Response::HTTP_SEE_OTHER);
